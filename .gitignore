@@ -1,3 +1,8 @@
+.DS_Store
+evento/.env
+evento/.codesandbox
+evento/.devcontainer
+evento/README.md
 evento/node_modules
 evento/build
 old_evento/
