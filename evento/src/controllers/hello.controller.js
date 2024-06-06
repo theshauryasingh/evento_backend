@@ -14,7 +14,7 @@ const helloController = createController({
           if(!query) {
             throw new BadRequestError("Query param not provided")
           }
-          return {message: 'Hello World'};
+          return {message: 'Hello World testing... '};
         },
       },
       POST: {

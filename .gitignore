@@ -1,3 +1,5 @@
+evento/src/prisma/migrations/
+evento/src/prisma/schema.prisma.backup
 .DS_Store
 evento/.env
 evento/.codesandbox

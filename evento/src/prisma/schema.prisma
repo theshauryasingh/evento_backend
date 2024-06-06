@@ -1,6 +1,7 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,7 +10,6 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
-
 
 model User {
   user_id        Int         @id @default(autoincrement())
@@ -28,6 +28,8 @@ model User {
   review         Review[]
   favourite      Favourite[]
   notification   Notification[]
+  claim_user     LostAndFound[] @relation("ClaimUser")
+  reporter_user  LostAndFound[] @relation("ReporterUser")
 }
 
 model Event {
@@ -54,18 +56,21 @@ model Event {
   sponsor            Sponsor[]
   advertisement      Advertisement[]
   eventmap           EventMap[]
-  shop               Shop[]
+  shop               Shops[]
   shoppayment        ShopPayment[]
   review             Review[]
   itinerary          Itinerary[]
   favourite          Favourite[]
-  tokentransaction  Token_Transaction[]
+  tokentransaction   Token_Transaction[]
+  amenities          Amenities[]   // Added relation field
+  emergency_contacts          Emergency_Contacts[]   // Added relation field
+  venue          Venue[]   // Added relation field
 }
 
 model Plan {
   plan_id       Int         @id @default(autoincrement())
   plan_features String      //will be converted to json once connected with postgresql
-  payment          Float
+  payment       Float
   plan_name     String
 
   user_plan     User_Plan[]
@@ -89,7 +94,7 @@ model User_Plan {
   user_id     Int
   is_activate Boolean
   user        User    @relation(fields: [user_id], references: [user_id])
-  plan        Plan   @relation(fields: [plan_id], references: [plan_id])
+  plan        Plan    @relation(fields: [plan_id], references: [plan_id])
 
   @@id([plan_id, user_id])
 }
@@ -97,20 +102,20 @@ model User_Plan {
 model Role {
   role_id   Int     @id @default(autoincrement())
   role_name String
-  user     User[]
+  user      User[]
 }
 
 model Sponsor {
-  sponsor_id  Int      @id @default(autoincrement())
-  event_id    Int
-  title        String
-  description       String
+  sponsor_id    Int      @id @default(autoincrement())
+  event_id      Int
+  title         String
+  description   String
   image_url     String
-  start_time       String
-  end_time       String
-  venue_id       Id
+  start_time    String
+  end_time      String
+  venue_id      Int
 
-  event       Event    @relation(fields: [event_id], references: [event_id])
+  event         Event    @relation(fields: [event_id], references: [event_id])
 }
 
 model Advertisement {
@@ -120,7 +125,7 @@ model Advertisement {
   level             String
   start_date        DateTime
   end_date          DateTime
-  image_url             String
+  image_url         String
 
   event             Event    @relation(fields: [event_id], references: [event_id])
 }
@@ -132,15 +137,13 @@ model LostAndFound {
   description            String
   is_claimed             Boolean
   claim_user_id          Int
-  claim_User_contact     String
-  reporter_User_name     String
-  reporter_User_contact  String
-  claim_User_name        String
   reporting_timestamp    DateTime
   claim_timestamp        DateTime
-  reporter_user_id          Int
+  reporter_user_id       Int
 
   event                  Event    @relation(fields: [event_id], references: [event_id])
+  claim_user             User     @relation("ClaimUser", fields: [claim_user_id], references: [user_id])
+  reporter_user          User     @relation("ReporterUser", fields: [reporter_user_id], references: [user_id])
 }
 
 model EventMap {
@@ -160,7 +163,6 @@ model Shops {
   event             Event    @relation(fields: [event_id], references: [event_id])
   shoppayment       ShopPayment[]
   tokentransaction  Token_Transaction[]
-  
 }
 
 model ShopPayment {
@@ -170,7 +172,7 @@ model ShopPayment {
   event_id    Int
   user_id     Int
 
-  shop        Shop     @relation(fields: [shop_id], references: [shop_id])
+  shop        Shops    @relation(fields: [shop_id], references: [shop_id])
   event       Event    @relation(fields: [event_id], references: [event_id])
   User        User     @relation(fields: [user_id], references: [user_id])
 }
@@ -197,7 +199,7 @@ model Itinerary {
   image_url             String   //will be converted to json once connected with postgresql
 
   event                 Event    @relation(fields: [event_id], references: [event_id])
-  favourite Favourite[]
+  favourite             Favourite[]
 }
 
 model Favourite {
@@ -222,7 +224,7 @@ model Token_Transaction {
 
   event            Event       @relation(fields: [event_ID], references: [event_id])
   transaction      Transaction @relation(fields: [transaction_ID], references: [id])
-  shop             Shop        @relation(fields: [shop_ID], references: [shop_id])
+  shop             Shops       @relation(fields: [shop_ID], references: [shop_id])
 }
 
 model Notification {
@@ -246,9 +248,7 @@ model Amenities {
   longitude           String   //will be converted to json once connected with postgresql
   image_url           String
 
-  event                 Event    @relation(fields: [event_id], references: [event_id])
-
-  favourite Favourite[]
+  event               Event    @relation(fields: [event_id], references: [event_id])
 }
 
 model Venue {
@@ -258,21 +258,15 @@ model Venue {
   latitude            DateTime
   longitude           String   //will be converted to json once connected with postgresql
 
-  event                 Event    @relation(fields: [event_id], references: [event_id])
-  favourite Favourite[]
+  event               Event[]
 }
 
 model Emergency_Contacts {
   id                    Int      @id @default(autoincrement())
-  event_id              String
+  event_id              Int
   contact_name          String
-  contact_number        DateTime
+  contact_number        String
   contact_type          String   //e.g. Police, Event Security, Medical Services, etc.
 
   event                 Event    @relation(fields: [event_id], references: [event_id])
-  favourite Favourite[]
 }
-
-
-// to initialize prisma
-// npx prisma init --datasource-provider sqlite

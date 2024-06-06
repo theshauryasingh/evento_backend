@@ -1,14 +1,13 @@
 import { BadRequestError, CustomError, createController, HttpStatusCode, Logger } from '@/lib';
 import { userService } from '@/services';
-
-import { query } from 'express';
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
+// import { query } from 'express';
 
 const logger = new Logger('auth.controller');
 
 const maxAge  = 3 * 24 * 60 * 60 ;
-const createToken = (id) => {
-    return jwt.sign({id}, 'secret text', {expiresIn : maxAge});
+const createToken = (id, secret_text) => {
+    return jwt.sign({id}, secret_text, {expiresIn : maxAge});
 }
 
 const handleErrors = (err) => {
@@ -16,15 +15,15 @@ const handleErrors = (err) => {
     let errors = {'email':'', 'password':''};
 
     if(err.message === 'incorrect email'){
-        errors.email = 'that email is not registered';
+        errors.email = 'The email is not registered';
     }
 
     if(err.message === 'incorrect password'){
-        errors.password = 'that password is not registered';
+        errors.password = 'The password is not registered';
     }
 
     if (err.code === 11000){
-        errors.email = "email is already registered";
+        errors.email = "Email is already registered";
         console.log(errors);
         return errors;
     }
@@ -71,21 +70,21 @@ const authController = createController({
   handlers: [
     {
       path: 'login',
-      GET: {
-      },
+      GET: {},
       POST: {
         status: HttpStatusCode.OK,
         execute: async ({body} , res) => {
-            logger.debug('.. ', body);
+            // logger.debug('.. ', body);
             const  {email, password} = body;
-            console.log(' .. ', email, password)
+            // console.log(' .. ', email, password)
             try {
                 const userdet = await userService.login(email, password);
                 const userid =  userdet.user_id
-                const token = createToken(userid);
                 // throw new Error("error testing  ");
-                res.cookie('refresh-token', token, {maxAge: maxAge * 1000, secure: true})
-                return {user: userid};
+                const refreshToken = createToken(userid, 'refresh-token');
+                const accessToken = createToken(userid, 'access-token');
+                // res.cookie('refresh-token', token, {maxAge: maxAge * 1000, secure: true})
+                return {user: {userid}, refreshToken:refreshToken, accessToken:accessToken};
             }
             catch(err){
                 logger.error(" .. error .. ", err)
@@ -114,9 +113,7 @@ const authController = createController({
                 } else {
                   console.log(" post signup userdet... ", userdet)
                   const userid =  userdet.user_id
-                  const token = createToken(userid);
-                  res.cookie('jwt', token, {maxAge: maxAge * 1000, secure: true})
-                  return {user: userid};
+                  return {user: {userid}};
                 }
             }
             catch(err){
