@@ -1,12 +1,12 @@
 import { config } from '@/config';
-import { helloController, authController } from '@/controllers';
+import { helloController, authController, eventController } from '@/controllers';
 import { Logger, Server, createServer } from '@/lib';
 
 const logger = new Logger('main');
 
 const server = new Server({
   globalApiBasePath: '/',
-  controllers: [helloController, authController],
+  controllers: [helloController, authController, eventController],
 });
 
 // logger.debug(" .>>>. ", helloController, " .<<<. ")

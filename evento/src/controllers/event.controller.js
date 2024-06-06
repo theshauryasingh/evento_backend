@@ -41,6 +41,7 @@ const eventController = createController({
       GET: {
         status: HttpStatusCode.OK,
         execute: async (_, res) => {
+          console.log('request received events categories')
           try {
             const categories = await eventService.getAllEventCategories();
             return categories;
