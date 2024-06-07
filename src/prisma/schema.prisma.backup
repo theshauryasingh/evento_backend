@@ -1,0 +1,277 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id        Int         @id @default(autoincrement())
+  full_name      String
+  email          String      @unique
+  password       String
+  contact_number String
+  token          Int         @default(0)
+  role_id        Int
+
+  role           Role  @relation(fields: [role_id], references: [role_id])
+  User_plan      User_Plan[]
+  transaction    Transaction[]
+  event          Event[]
+  shoppayment    ShopPayment[]
+  review         Review[]
+  favourite      Favourite[]
+  notification   Notification[]
+}
+
+model Event {
+  event_id           Int      @id @default(autoincrement())
+  event_name         String
+  event_description  String
+  location           String
+  start_date         DateTime
+  end_date           DateTime
+  event_tags         String      //will be converted to json once connected with postgresql
+  // emergency_contacts String      //will be converted to json once connected with postgresql
+  creator_id         Int
+  approval           Boolean  @default(false)
+  status             String
+  // images             String      //will be converted to json once connected with postgresql
+  entry_fee          Float
+  thumbnail_link     String
+  banner_link        DateTime
+  video_link         DateTime
+  venue_id           Int
+
+  creator            User     @relation(fields: [creator_id], references: [user_id])
+  lostandfound       LostAndFound[]
+  sponsor            Sponsor[]
+  advertisement      Advertisement[]
+  eventmap           EventMap[]
+  shop               Shop[]
+  shoppayment        ShopPayment[]
+  review             Review[]
+  itinerary          Itinerary[]
+  favourite          Favourite[]
+  tokentransaction  Token_Transaction[]
+}
+
+model Plan {
+  plan_id       Int         @id @default(autoincrement())
+  plan_features String      //will be converted to json once connected with postgresql
+  payment          Float
+  plan_name     String
+
+  user_plan     User_Plan[]
+}
+
+model Transaction {
+  id                Int     @id @default(autoincrement())
+  user_id           Int
+  plan_id           Int
+  amount            Decimal
+  GST               Decimal
+  transaction_id    String
+  transaction_type  String
+
+  User              User    @relation(fields: [user_id], references: [user_id])
+  tokentransaction  Token_Transaction[]
+}
+
+model User_Plan {
+  plan_id     Int
+  user_id     Int
+  is_activate Boolean
+  user        User    @relation(fields: [user_id], references: [user_id])
+  plan        Plan   @relation(fields: [plan_id], references: [plan_id])
+
+  @@id([plan_id, user_id])
+}
+
+model Role {
+  role_id   Int     @id @default(autoincrement())
+  role_name String
+  user     User[]
+}
+
+model Sponsor {
+  sponsor_id  Int      @id @default(autoincrement())
+  event_id    Int
+  title        String
+  description       String
+  image_url     String
+  start_time       String
+  end_time       String
+  venue_id       Id
+
+  event       Event    @relation(fields: [event_id], references: [event_id])
+}
+
+model Advertisement {
+  advertisement_id  Int      @id @default(autoincrement())
+  event_id          Int
+  title             String
+  level             String
+  start_date        DateTime
+  end_date          DateTime
+  image_url             String
+
+  event             Event    @relation(fields: [event_id], references: [event_id])
+}
+
+model LostAndFound {
+  lost_and_found_id      Int      @id @default(autoincrement())
+  event_id               Int
+  item_name              String
+  description            String
+  is_claimed             Boolean
+  claim_user_id          Int
+  claim_User_contact     String
+  reporter_User_name     String
+  reporter_User_contact  String
+  claim_User_name        String
+  reporting_timestamp    DateTime
+  claim_timestamp        DateTime
+  reporter_user_id          Int
+
+  event                  Event    @relation(fields: [event_id], references: [event_id])
+}
+
+model EventMap {
+  event_map_id   Int      @id @default(autoincrement())
+  map_object     String
+  event_id       Int
+
+  event          Event    @relation(fields: [event_id], references: [event_id])
+}
+
+model Shops {
+  shop_id           Int      @id @default(autoincrement())
+  shop_name         String
+  event_id          Int
+  shop_type         String
+
+  event             Event    @relation(fields: [event_id], references: [event_id])
+  shoppayment       ShopPayment[]
+  tokentransaction  Token_Transaction[]
+  
+}
+
+model ShopPayment {
+  payment_id  Int      @id @default(autoincrement())
+  amount      Float
+  shop_id     Int
+  event_id    Int
+  user_id     Int
+
+  shop        Shop     @relation(fields: [shop_id], references: [shop_id])
+  event       Event    @relation(fields: [event_id], references: [event_id])
+  User        User     @relation(fields: [user_id], references: [user_id])
+}
+
+model Review {
+  review_id      Int      @id @default(autoincrement())
+  review_title   String
+  review_desc    String
+  user_id        Int
+  rating         Int
+  timestamp      DateTime
+  event_id       Int
+
+  User           User     @relation(fields: [user_id], references: [user_id])
+  event          Event    @relation(fields: [event_id], references: [event_id])
+}
+
+model Itinerary {
+  itinerary_id          Int      @id @default(autoincrement())
+  event_id              Int
+  itinerary_name        String
+  itinerary_description String
+  timestamp             DateTime
+  image_url             String   //will be converted to json once connected with postgresql
+
+  event                 Event    @relation(fields: [event_id], references: [event_id])
+  favourite Favourite[]
+}
+
+model Favourite {
+  event_id       Int
+  itinerary_id   Int
+  user_id        Int
+
+  event          Event       @relation(fields: [event_id], references: [event_id])
+  itinerary      Itinerary   @relation(fields: [itinerary_id], references: [itinerary_id])
+  user           User        @relation(fields: [user_id], references: [user_id])
+
+  @@id([event_id, itinerary_id, user_id])
+}
+
+model Token_Transaction {
+  ID               Int        @id @default(autoincrement())
+  transaction_type String
+  token            Int
+  event_ID         Int
+  transaction_ID   Int
+  shop_ID          Int
+
+  event            Event       @relation(fields: [event_ID], references: [event_id])
+  transaction      Transaction @relation(fields: [transaction_ID], references: [id])
+  shop             Shop        @relation(fields: [shop_ID], references: [shop_id])
+}
+
+model Notification {
+  id            Int       @id @default(autoincrement())
+  title         String
+  body          String
+  type          String
+  timestamp     DateTime
+  user_id       Int
+  event_id      Int
+
+  user          User      @relation(fields: [user_id], references: [user_id])
+}
+
+model Amenities {
+  amenity_id          Int      @id @default(autoincrement())
+  event_id            Int
+  name                String
+  description         String
+  latitude            DateTime
+  longitude           String   //will be converted to json once connected with postgresql
+  image_url           String
+
+  event                 Event    @relation(fields: [event_id], references: [event_id])
+
+  favourite Favourite[]
+}
+
+model Venue {
+  id                  Int      @id @default(autoincrement())
+  name                String
+  address             String
+  latitude            DateTime
+  longitude           String   //will be converted to json once connected with postgresql
+
+  event                 Event    @relation(fields: [event_id], references: [event_id])
+  favourite Favourite[]
+}
+
+model Emergency_Contacts {
+  id                    Int      @id @default(autoincrement())
+  event_id              String
+  contact_name          String
+  contact_number        DateTime
+  contact_type          String   //e.g. Police, Event Security, Medical Services, etc.
+
+  event                 Event    @relation(fields: [event_id], references: [event_id])
+  favourite Favourite[]
+}
+
+
+// to initialize prisma
+// npx prisma init --datasource-provider sqlite
