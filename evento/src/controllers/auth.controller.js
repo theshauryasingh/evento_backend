@@ -75,9 +75,9 @@ const authController = createController({
       POST: {
         status: HttpStatusCode.OK,
         execute: async ({body} , res) => {
-            // logger.debug('.. ', body);
+            logger.debug('.. ', body);
             const  {email, password} = body;
-            // console.log(' .. ', email, password)
+            console.log(' .. ', email, password)
             try {
                 const { user, tokens } = await userService.login(email, password);
                 // const userid =  userdet.user_id
@@ -106,14 +106,14 @@ const authController = createController({
             // console.log(" post signup ... ", email, password)
             role_id = Number(role_id)
             try{
-                const { user, tokens } = await userService.createUser({email, password, full_name, contact_number, role_id});
-                console.log(" post signup ... ", user, tokens)
+                const { user } = await userService.createUser({email, password, full_name, contact_number, role_id});
+                console.log(" post signup ... ", user)
                 if (user['status'] == false) {
                   throw new BadRequestError("User already exists");
                 } else {
                   console.log(" post signup userdet... ", user)
                   const userid =  user.user_id
-                  return { user, tokens };
+                  return { userid };
                 }
             }
             catch(err){

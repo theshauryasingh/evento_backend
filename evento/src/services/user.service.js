@@ -29,7 +29,8 @@ const userService = {
     if (!isValidPassword) {
         throw new Error('Incorrect password');
     }
-    const tokens = await tokenService.generateTokens(user.user_id);
+    const tokens = await tokenService.getToken(user.user_id);
+    console.log('tokens ', tokens);
 
     return { user, tokens };
   },
@@ -49,11 +50,8 @@ const userService = {
       newUser['status'] = true;
   
       console.log('createUser done');
-      const tokens = await tokenService.getToken(newUser.user_id);
-      console.log('tokens ', tokens);
-      return { user: newUser, tokens };
+      return { user: newUser };
 
-   
     } catch (error) {
       console.error('fail', error);
       return { error, status: false };
