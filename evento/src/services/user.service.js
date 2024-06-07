@@ -1,4 +1,7 @@
 import { PrismaClient } from '@prisma/client';
+import tokenService from './token.service';
+// import {generateTokens}  from '@/services';
+
 
 const prisma = new PrismaClient();
 
@@ -26,39 +29,35 @@ const userService = {
     if (!isValidPassword) {
         throw new Error('Incorrect password');
     }
+    const tokens = await tokenService.generateTokens(user.user_id);
 
-    return user;
+    return { user, tokens };
   },
+
   // Get all users
   async getUsers() {
     return prisma.user.findMany();
   },
 
   // Get user by ID
-  async getUserById(userId) {
-    return prisma.user.findUnique({
-      where: {
-        user_id: userId,
-      },
-    });
-  },
-
-  // Create a new user
   async createUser(userData) {
-    return prisma.user
-    .create({
-      data: userData,
-    })
-    .then(newUser => {
-      console.log('done')
+    // console.log("==>>", typeof tokenService);
+    try {
+      const newUser = await prisma.user.create({
+        data: userData,
+      });
       newUser['status'] = true;
-      return newUser;
-    }) //need to do error handling more properly
-    .catch(error => {
-      console.log('fail')
-      // error instanceof prisma.PrismaClientKnownRequestError
-      return {error, status: false};
-    });
+  
+      console.log('createUser done');
+      const tokens = await tokenService.getToken(newUser.user_id);
+      console.log('tokens ', tokens);
+      return { user: newUser, tokens };
+
+   
+    } catch (error) {
+      console.error('fail', error);
+      return { error, status: false };
+    }
   },
 
   // Update user by ID
@@ -73,6 +72,7 @@ const userService = {
 
   // Delete user by ID
   async deleteUser(userId) {
+    await tokenService.deleteUserRefreshTokens(userId);
     return prisma.user.delete({
       where: {
         user_id: userId,

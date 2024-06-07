@@ -1,14 +1,15 @@
 import { BadRequestError, CustomError, createController, HttpStatusCode, Logger } from '@/lib';
-import { userService } from '@/services';
+import { userService, tokenService } from '@/services';
+
 import jwt from 'jsonwebtoken';
 // import { query } from 'express';
 
 const logger = new Logger('auth.controller');
 
-const maxAge  = 3 * 24 * 60 * 60 ;
-const createToken = (id, secret_text) => {
-    return jwt.sign({id}, secret_text, {expiresIn : maxAge});
-}
+// const maxAge  = 3 * 24 * 60 * 60 ;
+// const createToken = (id, secret_text) => {
+//     return jwt.sign({id}, secret_text, {expiresIn : maxAge});
+// }
 
 const handleErrors = (err) => {
     // console.log(err.message, err.code);
@@ -78,18 +79,16 @@ const authController = createController({
             const  {email, password} = body;
             // console.log(' .. ', email, password)
             try {
-                const userdet = await userService.login(email, password);
-                const userid =  userdet.user_id
+                const { user, tokens } = await userService.login(email, password);
+                // const userid =  userdet.user_id
                 // throw new Error("error testing  ");
-                const refreshToken = createToken(userid, 'refresh-token');
-                const accessToken = createToken(userid, 'access-token');
-                // res.cookie('refresh-token', token, {maxAge: maxAge * 1000, secure: true})
-                return {user: {userid}, refreshToken:refreshToken, accessToken:accessToken};
+                // return {user: {userid}, refreshToken:refreshToken, accessToken:accessToken};
+                return { user, tokens };
             }
             catch(err){
-                logger.error(" .. error .. ", err)
+                logger.error(" .. login error .. ", err)
                 const errors = handleErrors(err)
-                throw new BadRequestError("failed ", errors)
+                throw new BadRequestError("'Login failed ", errors)
             }
         },
       },
@@ -104,22 +103,46 @@ const authController = createController({
         status : HttpStatusCode.CREATED,
         execute: async({body}, res) => {
             let { email, password, full_name, contact_number, role_id } = body;
-            console.log(" post signup ... ", email, password)
+            // console.log(" post signup ... ", email, password)
             role_id = Number(role_id)
             try{
-                const userdet = await userService.createUser({email, password, full_name, contact_number, role_id});
-                if (userdet['status'] == false) {
+                const { user, tokens } = await userService.createUser({email, password, full_name, contact_number, role_id});
+                console.log(" post signup ... ", user, tokens)
+                if (user['status'] == false) {
                   throw new BadRequestError("User already exists");
                 } else {
                   console.log(" post signup userdet... ", userdet)
-                  const userid =  userdet.user_id
-                  return {user: {userid}};
+                  const userid =  user.user_id
+                  return { user, tokens };
                 }
             }
             catch(err){
-              logger.error(" .. error .. ", err);
+              logger.error(" .. signup error .. ", err);
               const errors = handleErrors(err);
               throw new BadRequestError("Failed", errors); // Assuming BadRequestError is a custom error class
+          }
+        }
+
+      } 
+    },
+    {
+      path: 'refresh',
+      GET: {
+        execute: () => {
+        }
+      },
+      POST: {
+        status : HttpStatusCode.CREATED,
+        execute: async({body}, res) => {
+            const { refreshToken } = body;
+            try{
+                const tokens = await tokenService.refreshAccessToken(refreshToken);
+                return { tokens };
+            }
+            catch(err){
+              logger.error('Token refresh error', err);
+              const errors = handleErrors(err);
+              throw new BadRequestError('Token refresh failed',  errors); // Assuming BadRequestError is a custom error class
           }
         }
 

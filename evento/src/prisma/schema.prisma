@@ -30,6 +30,16 @@ model User {
   notification   Notification[]
   claim_user     LostAndFound[] @relation("ClaimUser")
   reporter_user  LostAndFound[] @relation("ReporterUser")
+  refreshTokens  RefreshToken[]
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [user_id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 
 model Event {
