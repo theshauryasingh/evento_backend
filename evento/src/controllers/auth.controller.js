@@ -111,7 +111,7 @@ const authController = createController({
                 if (user['status'] == false) {
                   throw new BadRequestError("User already exists");
                 } else {
-                  console.log(" post signup userdet... ", userdet)
+                  console.log(" post signup userdet... ", user)
                   const userid =  user.user_id
                   return { user, tokens };
                 }
