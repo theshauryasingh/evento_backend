@@ -16,11 +16,11 @@
     "serve:prod": "node ./build/bundle.js",
     "serve:dev": "node ./build/main.js",
     "build": "npm run build:prod",
-    "build:dev": "npx npm-run-all clean transpile:dev",
-    "build:prod": "npx npm-run-all clean transpile:prod",
+    "build:dev": "npm-run-all clean transpile:dev",
+    "build:prod": "npm-run-all clean transpile:prod",
     "transpile:dev": "webpack --env mode=development",
     "transpile:prod": "webpack --env mode=production",
-    "clean": "rimraf build"
+    "clean": "node clean.js"
   },
   "nodemonConfig": {
     "exec": "npm run watch:dev",
