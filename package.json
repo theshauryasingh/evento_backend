@@ -67,6 +67,7 @@
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4",
     "webpack-node-externals": "^3.0.0"
+    "rimraf": "^3.0.2"
   },
   "dependencies": {
     "@prisma/client": "5.9.1",
