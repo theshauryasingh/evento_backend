@@ -34,7 +34,7 @@ const handleErrors = (err) => {
 
 
 const eventController = createController({
-  basePath: 'events',
+  basePath: 'event',
   handlers: [
     {
       path: 'categories',
@@ -51,7 +51,37 @@ const eventController = createController({
           }
         }
       }
-    }
+    },
+    {
+      path: 'create',
+      GET: {
+        execute: () => {
+        }
+      },
+      POST: {
+        status : HttpStatusCode.CREATED,
+        execute: async({body}, res) => {
+            console.log('event create request received')
+            try{
+                const { event } = await eventService.createEvent(body);
+                console.log(" create event ... ", event)
+                if (event['status'] == false) {
+                  throw new BadRequestError("Event already exists");
+                } else {
+                  console.log(" event created .. ", event.event_id)
+                  const eventid =  event.event_id
+                  return { eventid };
+                }
+            }
+            catch(err){
+              logger.error(" .. signup error .. ", err);
+              const errors = handleErrors(err);
+              throw new BadRequestError("Failed", errors); // Assuming BadRequestError is a custom error class
+          }
+        }
+
+      } 
+    },
   ],
 });
 

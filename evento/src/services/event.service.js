@@ -12,7 +12,25 @@ const eventService = {
       { id: 3, name: 'Theatre' },
       { id: 4, name: 'Comedy' },
     ];
-  }
+  },
+
+  // Create a new user
+  async createEvent(eventData) {
+    return prisma.event
+    .create({
+      data: eventData,
+    })
+    .then(newEvent => {
+      console.log('done')
+      newEvent['status'] = true;
+      return newEvent;
+    }) //need to do error handling more properly
+    .catch(error => {
+      console.log('fail ..', error)
+      // error instanceof prisma.PrismaClientKnownRequestError
+      return {error, status: false};
+    });
+  },
 };
 
 const userService = {

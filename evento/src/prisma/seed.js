@@ -47,3 +47,8 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+
+//
+// add event categories
+//
