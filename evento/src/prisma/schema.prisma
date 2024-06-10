@@ -57,8 +57,8 @@ model Event {
   // images             String      //will be converted to json once connected with postgresql
   entry_fee          Float
   thumbnail_link     String
-  banner_link        DateTime
-  video_link         DateTime
+  banner_link        String
+  video_link         String
   venue_id           Int
 
   creator            User     @relation(fields: [creator_id], references: [user_id])
