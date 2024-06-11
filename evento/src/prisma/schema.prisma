@@ -29,8 +29,8 @@ model User {
   review         Review[]
   favourite      Favourite[]
   notification   Notification[]
-  claim_user     LostAndFound[] @relation("ClaimUser")
-  reporter_user  LostAndFound[] @relation("ReporterUser")
+  // claim_user     LostAndFound[] @relation("ClaimUser")
+  // reporter_user  LostAndFound[] @relation("ReporterUser")
   refreshTokens  RefreshToken[]
 }
 
