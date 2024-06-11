@@ -1,4 +1,4 @@
-/evento/src/prisma
+evento/yarn.lock
 evento/src/prisma/schema.prisma.backup
 .DS_Store
 evento/.env

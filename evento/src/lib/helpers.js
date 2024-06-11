@@ -95,10 +95,11 @@ export class ForbiddenError extends BaseError {
 }
 
 export class CustomError extends BaseError {
-  constructor(
-    message = 'an error occurred',
-    httpCode = HttpStatusCode.INTERNAL_SERVER,
-    name = 'error message'
+  constructor(message, httpCode, name
+    // message = 'an error occurred',
+    // httpCode = HttpStatusCode.INTERNAL_SERVER,
+    // name = 'error message'
+
   ) {
     super(message, httpCode, name);
   }

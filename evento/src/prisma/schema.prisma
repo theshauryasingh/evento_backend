@@ -9,6 +9,7 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOWDATABASE_URL")
 }
 
 model User {
@@ -59,7 +60,10 @@ model Event {
   thumbnail_link     String
   banner_link        String
   video_link         String
-  venue_id           Int
+  venue_name                String
+  venue_address             String
+  venue_latitude            String
+  venue_longitude           String
 
   creator            User     @relation(fields: [creator_id], references: [user_id])
   lostandfound       LostAndFound[]
@@ -74,7 +78,7 @@ model Event {
   tokentransaction   Token_Transaction[]
   amenities          Amenities[]   // Added relation field
   emergency_contacts          Emergency_Contacts[]   // Added relation field
-  venue          Venue[]   // Added relation field
+  // venue              Venue   @relation(fields: [venue_id], references: [id]) // Added relation field
 }
 
 model Plan {
@@ -261,15 +265,6 @@ model Amenities {
   event               Event    @relation(fields: [event_id], references: [event_id])
 }
 
-model Venue {
-  id                  Int      @id @default(autoincrement())
-  name                String
-  address             String
-  latitude            DateTime
-  longitude           String   //will be converted to json once connected with postgresql
-
-  event               Event[]
-}
 
 model Emergency_Contacts {
   id                    Int      @id @default(autoincrement())

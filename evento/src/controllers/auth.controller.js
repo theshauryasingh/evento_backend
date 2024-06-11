@@ -14,6 +14,9 @@ const logger = new Logger('auth.controller');
 const handleErrors = (err) => {
     // console.log(err.message, err.code);
     let errors = {'email':'', 'password':''};
+    if (err.message === 'User not found'){
+      errors.email = 'email not found';
+    }
 
     if(err.message === 'incorrect email'){
         errors.email = 'The email is not registered';
@@ -34,7 +37,7 @@ const handleErrors = (err) => {
             errors[properties.path] = properties.message;
         });
     }
-    console.log(errors);
+    console.log(' .. handleErrors ..' , errors);
     return errors;
 }
 
