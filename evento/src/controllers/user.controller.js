@@ -1,5 +1,6 @@
 import { BadRequestError, CustomError, createController, HttpStatusCode, Logger } from '@/lib';
 import { userService, tokenService } from '@/services';
+import { verifyTokenMiddleware } from '@/middlewares';
 
 const logger = new Logger('user.controller');
 
@@ -33,6 +34,7 @@ const handleErrors = (err) => {
 
 const userController = createController({
   basePath: 'user',
+  middlewares: [verifyTokenMiddleware],
   handlers: [
     {
       path: 'listall',
@@ -40,6 +42,7 @@ const userController = createController({
       GET: {
         status: HttpStatusCode.OK,
         execute: async () => {
+            console.log(" ..user..listall.. ")
             try {
                 const users = await userService.getUsers();
                 return users;

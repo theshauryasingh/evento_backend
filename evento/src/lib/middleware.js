@@ -9,7 +9,9 @@ const createMiddleware =
   (middlewareFunction, contextExtractor) => async (req, res, next) => {
     try {
       const result = await middlewareFunction(getExecuteArgs(req));
+      console.log(" ..createMiddleware.. result.. ", result)
       const context = contextExtractor(result);
+      console.log(" ..createMiddleware.. context.. ", context)
       req.ctx = { ...req.context, ...context };
       next();
     } catch (error) {

@@ -29,8 +29,8 @@ model User {
   review         Review[]
   favourite      Favourite[]
   notification   Notification[]
-  // claim_user     LostAndFound[] @relation("ClaimUser")
-  // reporter_user  LostAndFound[] @relation("ReporterUser")
+  claim_user     LostAndFound[] @relation("ClaimUser")
+  reporter_user  LostAndFound[] @relation("ReporterUser")
   refreshTokens  RefreshToken[]
 }
 
@@ -116,7 +116,7 @@ model User_Plan {
 model Role {
   role_id   Int     @id @default(autoincrement())
   role_name String
-  user      User[]
+  user      User[]  
 }
 
 model Sponsor {
@@ -127,7 +127,7 @@ model Sponsor {
   image_url     String
   start_time    String
   end_time      String
-  venue_id      Int
+  // venue_id      Int
 
   event         Event    @relation(fields: [event_id], references: [event_id])
 }

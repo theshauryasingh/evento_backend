@@ -46,7 +46,7 @@ const tokenService = {
       throw new Error('Invalid or expired refresh token');
     }
 
-    const accessToken = createToken(storedToken.user.user_id, config.ACCESS_TOKEN_SECRET, '15m');
+    const accessToken = createToken(storedToken.user.user_id, process.env.ACCESS_TOKEN_SECRET, '15m');
 
     return { accessToken };
   },

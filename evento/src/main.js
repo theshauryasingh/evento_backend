@@ -1,5 +1,6 @@
 import { config } from '@/config';
 import { helloController, authController, eventController, userController } from '@/controllers';
+import { verifyTokenMiddleware } from '@/middlewares';
 import { Logger, Server, createServer } from '@/lib';
 
 const logger = new Logger('main');
@@ -7,6 +8,7 @@ const logger = new Logger('main');
 const server = new Server({
   globalApiBasePath: '/',
   controllers: [helloController, authController, eventController, userController],
+  // useMiddlewares: [verifyTokenMiddleware]
 });
 
 // logger.debug(" .>>>. ", helloController, " .<<<. ")

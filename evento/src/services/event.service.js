@@ -21,8 +21,8 @@ const eventService = {
       data: eventData,
     })
     .then(newEvent => {
-      console.log('done')
       newEvent['status'] = true;
+      console.log('done .... ', newEvent)
       return newEvent;
     }) //need to do error handling more properly
     .catch(error => {

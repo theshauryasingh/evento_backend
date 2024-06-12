@@ -58,11 +58,14 @@ const createExecutionHandler =
   async (req, res) => {
     try {
       const executeArgs = getExecuteArgs(req);
+      console.log(" .. createExecutionHandler .. executeArgs .. ", executeArgs);
       const response = await Promise.resolve(execute(executeArgs, res));
+      console.log(" .. createExecutionHandler .. response .. ", response);
       const apiResponse = createApiResponse(response, status);
       res.status(status).send(apiResponse);
     } catch (error) {
-      // logger.info(error);
+      console.log(" .. createExecutionHandler .. error .. ", error);
+      logger.info(error);
       handleApiError(error, res);
     }
   };

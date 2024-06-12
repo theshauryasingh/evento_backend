@@ -1,15 +1,10 @@
 import { BadRequestError, CustomError, createController, HttpStatusCode, Logger } from '@/lib';
 import { userService, tokenService } from '@/services';
 
-import jwt from 'jsonwebtoken';
 // import { query } from 'express';
 
 const logger = new Logger('auth.controller');
 
-// const maxAge  = 3 * 24 * 60 * 60 ;
-// const createToken = (id, secret_text) => {
-//     return jwt.sign({id}, secret_text, {expiresIn : maxAge});
-// }
 
 const handleErrors = (err) => {
     // console.log(err.message, err.code);
@@ -140,7 +135,8 @@ const authController = createController({
             const { refreshToken } = body;
             try{
                 const tokens = await tokenService.refreshAccessToken(refreshToken);
-                return { tokens };
+                console.log(' .. auth refresh .. ', tokens);
+                return tokens;
             }
             catch(err){
               logger.error('Token refresh error', err);

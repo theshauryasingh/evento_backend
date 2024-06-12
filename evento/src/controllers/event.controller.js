@@ -63,7 +63,7 @@ const eventController = createController({
         execute: async({body}, res) => {
             console.log('event create request received')
             try{
-                const { event } = await eventService.createEvent(body);
+                const event = await eventService.createEvent(body);
                 console.log(" create event ... ", event)
                 if (event['status'] == false) {
                   throw new BadRequestError("Event already exists");
