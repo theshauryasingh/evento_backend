@@ -34,7 +34,7 @@ const handleErrors = (err) => {
 
 
 const eventController = createController({
-  basePath: 'event',
+  basePath: 'events',
   handlers: [
     {
       path: 'categories',
